@@ -93,12 +93,12 @@ app = webapp2.WSGIApplication([
 ], debug=True)
 
 deferred_application = webapp.WSGIApplication([(".*", TaskHandler)])
+deferred_application.router.set_matcher(intercept_deferred)
+# def main():
+#     # run_wsgi_app(deferred_application)
+#     app.RUN()
 
-def main():
-    run_wsgi_app(deferred_application)
-    app.RUN()
 
-
-if __name__ == '__main__':
-  main()
+# if __name__ == '__main__':
+#   main()
 

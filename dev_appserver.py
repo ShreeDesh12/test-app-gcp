@@ -8,7 +8,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 import os
-import subprocess
 import sys
 
 from bootstrapping import bootstrapping
@@ -30,9 +29,6 @@ def main():
     java.RequireJavaInstalled(datastore_util.DATASTORE_TITLE, min_version=8)
   components = wrapper_util.GetComponents(runtimes)
   components.append('cloud-datastore-emulator')
-  if (platforms.OperatingSystem.Current() == platforms.OperatingSystem.LINUX
-      and 'app-engine-php' in components):
-    components.remove('app-engine-php')
   update_manager.UpdateManager.EnsureInstalledAndRestart(
       components,
       command=__file__)
@@ -50,9 +46,7 @@ def main():
     ])
 
   # Pass the path to cloud datastore emulator to dev_appserver.
-  # realpath is needed in the case where __file__ is a path containing symlinks.
-  sdk_root = os.path.dirname(
-      os.path.dirname(os.path.abspath(os.path.realpath(__file__))))
+  sdk_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
   emulator_dir = os.path.join(sdk_root, 'platform', 'cloud-datastore-emulator')
   emulator_script = (
       'cloud_datastore_emulator.cmd' if platforms.OperatingSystem.IsWindows()
@@ -64,18 +58,8 @@ def main():
       os.path.join('platform', 'google_appengine'), 'dev_appserver.py', *args)
 
 
-def _IsSpecifiedPython2():
-  cloudsdk_python = os.environ.get('CLOUDSDK_PYTHON', None)
-  if not cloudsdk_python:
-    return False
-  version_string = subprocess.check_output([
-      cloudsdk_python, '-c', 'import sys;print(sys.version_info[0])'])
-  return 2 == int(version_string.strip())
-
-
 if __name__ == '__main__':
-  if not _IsSpecifiedPython2():
-    bootstrapping.DisallowPython3()
+  bootstrapping.DisallowPython3()
   try:
     bootstrapping.CommandStart('dev_appserver', component_id='core')
     bootstrapping.CheckUpdates('dev_appserver')

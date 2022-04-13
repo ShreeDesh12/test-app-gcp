@@ -8,6 +8,7 @@ def user_name_change(key, new_name):
   # print("Entered inside the queue successfully")
   # user = key.get()
   print(new_name)
+  print("task is executed")
   # user.name = new_name
   # u = user.put()
   # return u 
